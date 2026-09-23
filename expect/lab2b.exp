@@ -1,0 +1,43 @@
+#!/usr/bin/env expect
+# lab2b.exp — Drive OpenCode TUI for Lab 2 Part B (skill creator)
+#
+# Usage: expect lab2b.exp <response_wait_seconds>
+
+set response_wait [lindex $argv 0]
+if {$response_wait eq ""} { set response_wait 90 }
+
+set timeout [expr {$response_wait + 30}]
+
+proc type_slow {str} {
+    foreach char [split $str ""] {
+        send -- $char
+        after 25
+    }
+}
+
+proc wait_ai {secs} {
+    puts "\n    \[wait\] Waiting ${secs}s for AI response..."
+    sleep $secs
+}
+
+# Launch OpenCode TUI
+spawn opencode
+sleep 5
+
+# Use skill-creator
+type_slow "Use the skill-creator to create a skill that reviews Python files for security issues. It should check for: hardcoded credentials, use of eval/exec, SQL injection patterns, and insecure HTTP calls. Output a security-report.md with findings sorted by severity."
+send "\r"
+wait_ai [expr {$response_wait + 30}]
+
+# Show what was generated
+type_slow "Show me the SKILL.md file that was just generated"
+send "\r"
+wait_ai $response_wait
+
+# Exit
+sleep 2
+type_slow "/quit"
+send "\r"
+sleep 2
+
+puts "\n\[OK\] Lab 2B TUI session complete"

@@ -1,0 +1,32 @@
+{
+  "$schema": "https://opencode.ai/config.schema.json",
+  "provider": {
+    "copilot": {
+      "name": "GitHub Copilot (Testing)",
+      "npm": "@ai-sdk/openai-compatible",
+      "options": {
+        "baseURL": "https://api.githubcopilot.com",
+        "apiKey": "${GITHUB_TOKEN}"
+      },
+      "models": {
+        "gpt-4o": {
+          "name": "GPT-4o (Copilot)",
+          "toolCall": true,
+          "contextLength": 128000
+        },
+        "gpt-4o-mini": {
+          "name": "GPT-4o Mini (Copilot)",
+          "toolCall": true,
+          "contextLength": 128000
+        },
+        "claude-sonnet-4": {
+          "name": "Claude Sonnet 4 (Copilot)",
+          "toolCall": true,
+          "contextLength": 200000
+        }
+      }
+    }
+  },
+  "model": "opencode/mimo-v2.5-free",
+  "instructions": ["INSTRUCTIONS.md"]
+}

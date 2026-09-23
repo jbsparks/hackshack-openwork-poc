@@ -1,0 +1,53 @@
+#!/usr/bin/env expect
+# lab2a.exp — Drive OpenCode TUI for Lab 2 Part A (test greeter skill)
+#
+# Usage: expect lab2a.exp <response_wait_seconds>
+
+set response_wait [lindex $argv 0]
+if {$response_wait eq ""} { set response_wait 90 }
+
+set timeout [expr {$response_wait + 30}]
+
+proc type_slow {str} {
+    foreach char [split $str ""] {
+        send -- $char
+        after 25
+    }
+}
+
+proc wait_ai {secs} {
+    puts "\n    \[wait\] Waiting ${secs}s for AI response..."
+    sleep $secs
+}
+
+# Launch OpenCode TUI
+spawn opencode
+sleep 5
+
+# Load skills
+type_slow "Load all local skills"
+send "\r"
+wait_ai $response_wait
+
+# Use greeter
+type_slow "Use the greeter skill to welcome me"
+send "\r"
+wait_ai $response_wait
+
+# Provide name/role when asked
+type_slow "Alex, Developer"
+send "\r"
+wait_ai $response_wait
+
+# Show output
+type_slow "Show me the contents of welcome.md"
+send "\r"
+wait_ai $response_wait
+
+# Exit
+sleep 2
+type_slow "/quit"
+send "\r"
+sleep 2
+
+puts "\n\[OK\] Lab 2A TUI session complete"

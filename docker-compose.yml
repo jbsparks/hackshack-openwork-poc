@@ -1,0 +1,17 @@
+services:
+  hackshack:
+    build:
+      context: .
+    container_name: hackshack-lab
+    ports:
+      - "5178:5178"    # OpenCode web UI
+      - "8080:8080"    # Tutorial docs viewer
+    environment:
+      - GITHUB_TOKEN=${GITHUB_TOKEN}
+    stdin_open: true
+    tty: true
+    deploy:
+      resources:
+        limits:
+          memory: 2g
+          cpus: "2"

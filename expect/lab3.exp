@@ -1,0 +1,43 @@
+#!/usr/bin/env expect
+# lab3.exp — Drive OpenCode TUI for Lab 3 (code review workflow)
+#
+# Usage: expect lab3.exp <response_wait_seconds>
+
+set response_wait [lindex $argv 0]
+if {$response_wait eq ""} { set response_wait 90 }
+
+set timeout [expr {$response_wait + 30}]
+
+proc type_slow {str} {
+    foreach char [split $str ""] {
+        send -- $char
+        after 25
+    }
+}
+
+proc wait_ai {secs} {
+    puts "\n    \[wait\] Waiting ${secs}s for AI response..."
+    sleep $secs
+}
+
+# Launch OpenCode TUI
+spawn opencode
+sleep 5
+
+# Load skills
+type_slow "Load all local skills"
+send "\r"
+wait_ai $response_wait
+
+# Run code review
+type_slow "Use the code-reviewer skill to review the lab-03-agent-workflow/sample-project/ directory"
+send "\r"
+wait_ai [expr {$response_wait + 30}]
+
+# Exit
+sleep 2
+type_slow "/quit"
+send "\r"
+sleep 2
+
+puts "\n\[OK\] Lab 3 TUI session complete"

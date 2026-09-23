@@ -1,0 +1,26 @@
+sandbox-output/
+node_modules/
+.DS_Store
+*.pyc
+__pycache__/
+
+# Local credentials - never commit
+.qscale-creds.json
+*-creds.json
+install.priv
+*.kubeconfig
+*-creds.json*
+.DS_Store
+node_modules/
+recordings/
+*-creds.json*
+*.kubeconfig
+install.priv
+.env
+*.key
+*.pem
+error*.png
+screenshot.png
+proxmox.png
+putty.png
+rdp.png

@@ -1,0 +1,55 @@
+#!/usr/bin/env expect
+# lab1.exp — Drive OpenCode TUI for Lab 1
+#
+# Usage: expect lab1.exp <response_wait_seconds>
+
+set response_wait [lindex $argv 0]
+if {$response_wait eq ""} { set response_wait 90 }
+
+set timeout [expr {$response_wait + 30}]
+
+proc type_slow {str} {
+    foreach char [split $str ""] {
+        send -- $char
+        after 25
+    }
+}
+
+proc wait_ai {secs} {
+    puts "\n    \[wait\] Waiting ${secs}s for AI response..."
+    sleep $secs
+}
+
+proc approve_tool {} {
+    # If OpenCode asks for tool approval, press y
+    after 2000
+    send "y"
+    after 500
+}
+
+# Launch OpenCode TUI
+spawn opencode
+sleep 5
+
+# Prompt 1: What files are in this directory?
+type_slow "What files are in this directory?"
+send "\r"
+wait_ai $response_wait
+
+# Prompt 2: Create hello.py
+type_slow "Create a Python script that prints \"Hello from the HackShack!\", save it as hello.py and run it."
+send "\r"
+wait_ai $response_wait
+
+# Prompt 3: Tools
+type_slow "What tools do you have available?"
+send "\r"
+wait_ai $response_wait
+
+# Exit
+sleep 2
+type_slow "/quit"
+send "\r"
+sleep 2
+
+puts "\n\[OK\] Lab 1 TUI session complete"

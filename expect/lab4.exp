@@ -1,0 +1,43 @@
+#!/usr/bin/env expect
+# lab4.exp — Drive OpenCode TUI for Lab 4 (use find-skills)
+#
+# Usage: expect lab4.exp <response_wait_seconds>
+
+set response_wait [lindex $argv 0]
+if {$response_wait eq ""} { set response_wait 90 }
+
+set timeout [expr {$response_wait + 30}]
+
+proc type_slow {str} {
+    foreach char [split $str ""] {
+        send -- $char
+        after 25
+    }
+}
+
+proc wait_ai {secs} {
+    puts "\n    \[wait\] Waiting ${secs}s for AI response..."
+    sleep $secs
+}
+
+# Launch OpenCode TUI
+spawn opencode
+sleep 5
+
+# Load skills
+type_slow "Load all local skills"
+send "\r"
+wait_ai $response_wait
+
+# Use find-skills
+type_slow "Find me a skill for writing unit tests"
+send "\r"
+wait_ai $response_wait
+
+# Exit
+sleep 2
+type_slow "/quit"
+send "\r"
+sleep 2
+
+puts "\n\[OK\] Lab 4 TUI session complete"

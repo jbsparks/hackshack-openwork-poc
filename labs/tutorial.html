@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HackShack - OpenCode Tutorial</title>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { display: flex; height: 100vh; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+
+/* Left: OpenCode */
+.left { flex: 1; border-right: 2px solid #e0e0e0; }
+.left iframe { width: 100%; height: 100%; border: none; }
+
+/* Right: Tutorial docs */
+.right { flex: 1; display: flex; flex-direction: column; background: #fafafa; }
+
+/* Primary tab bar (Welcome, Lab 1, Lab 2, Lab 3) */
+.tabs-primary { display: flex; background: #f0f0f0; border-bottom: 1px solid #ddd; padding: 0; flex-shrink: 0; }
+.tabs-primary button {
+  padding: 10px 20px; border: none; background: transparent; cursor: pointer;
+  font-size: 14px; color: #666; border-bottom: 3px solid transparent;
+  font-weight: 500;
+}
+.tabs-primary button.active { color: #111; border-bottom: 3px solid #01A982; background: #fafafa; font-weight: 700; }
+.tabs-primary button:hover { background: #e8e8e8; }
+
+/* Sub-tab bar (Web / CLI) -- only shown for labs */
+.tabs-sub { display: flex; background: #fafafa; border-bottom: 1px solid #e0e0e0; padding: 0 16px; flex-shrink: 0; }
+.tabs-sub button {
+  padding: 6px 14px; border: none; background: transparent; cursor: pointer;
+  font-size: 12px; color: #888; border-bottom: 2px solid transparent;
+  text-transform: uppercase; letter-spacing: 0.5px;
+}
+.tabs-sub button.active { color: #01A982; border-bottom: 2px solid #01A982; font-weight: 600; }
+.tabs-sub button:hover { color: #555; }
+
+/* Doc content */
+.doc-content {
+  flex: 1; overflow-y: auto; padding: 24px 32px; line-height: 1.7;
+}
+.doc-content h1 { font-size: 24px; margin: 0 0 16px 0; padding-bottom: 8px; border-bottom: 2px solid #e0e0e0; }
+.doc-content h2 { font-size: 20px; margin: 24px 0 12px 0; color: #01A982; }
+.doc-content h3 { font-size: 16px; margin: 20px 0 8px 0; }
+.doc-content p { margin: 8px 0; }
+.doc-content code {
+  background: #f0f0f0; padding: 2px 6px; border-radius: 3px;
+  font-family: "SF Mono", Monaco, monospace; font-size: 13px;
+}
+.doc-content pre {
+  background: #1e1e1e; color: #d4d4d4; padding: 16px; border-radius: 8px;
+  overflow-x: auto; margin: 12px 0; line-height: 1.5;
+}
+.doc-content pre code { background: none; color: inherit; padding: 0; }
+.doc-content table { border-collapse: collapse; width: 100%; margin: 12px 0; }
+.doc-content th, .doc-content td { border: 1px solid #ddd; padding: 8px 12px; text-align: left; }
+.doc-content th { background: #f5f5f5; font-weight: 600; }
+.doc-content ul, .doc-content ol { margin: 8px 0 8px 24px; }
+.doc-content li { margin: 4px 0; }
+.doc-content strong { color: #111; }
+.doc-content blockquote {
+  border-left: 3px solid #01A982; margin: 12px 0; padding: 8px 16px;
+  background: #f0faf6; color: #333;
+}
+.doc-content hr { border: none; border-top: 1px solid #e0e0e0; margin: 20px 0; }
+.doc-content a { color: #01A982; }
+</style>
+</head>
+<body>
+
+<div class="left">
+  <iframe src="http://localhost:5178" allow="clipboard-read; clipboard-write"></iframe>
+</div>
+
+<div class="right">
+  <div class="tabs-primary" id="tabs-primary"></div>
+  <div class="tabs-sub" id="tabs-sub"></div>
+  <div class="doc-content" id="doc-content"></div>
+</div>
+
+<script>
+// Tab structure: primary tabs with optional Web/CLI sub-tabs
+const tabs = [
+  { label: "Welcome", subs: null, path: "README.md" },
+  { label: "Lab 1",   subs: [
+    { label: "Web", path: "lab-01-getting-started/web.md" },
+    { label: "CLI", path: "lab-01-getting-started/cli.md" }
+  ]},
+  { label: "Lab 2",   subs: [
+    { label: "Web", path: "lab-02-skills/web.md" },
+    { label: "CLI", path: "lab-02-skills/cli.md" }
+  ]},
+  { label: "Lab 3",   subs: [
+    { label: "Web", path: "lab-03-agent-workflow/web.md" },
+    { label: "CLI", path: "lab-03-agent-workflow/cli.md" }
+  ]},
+  { label: "Lab 4",   subs: [
+    { label: "Web", path: "lab-04-ingesting-skills/web.md" },
+    { label: "CLI", path: "lab-04-ingesting-skills/cli.md" }
+  ]}
+];
+
+let activePrimary = 0;
+let activeSub = 0;
+
+function renderPrimaryTabs() {
+  const el = document.getElementById("tabs-primary");
+  el.innerHTML = tabs.map((tab, i) =>
+    `<button class="${i === activePrimary ? 'active' : ''}" onclick="selectPrimary(${i})">${tab.label}</button>`
+  ).join("");
+}
+
+function renderSubTabs() {
+  const el = document.getElementById("tabs-sub");
+  const tab = tabs[activePrimary];
+  if (!tab.subs) { el.style.display = "none"; return; }
+  el.style.display = "flex";
+  el.innerHTML = tab.subs.map((sub, i) =>
+    `<button class="${i === activeSub ? 'active' : ''}" onclick="selectSub(${i})">${sub.label}</button>`
+  ).join("");
+}
+
+function getActivePath() {
+  const tab = tabs[activePrimary];
+  if (!tab.subs) return tab.path;
+  return tab.subs[activeSub].path;
+}
+
+async function loadContent() {
+  const content = document.getElementById("doc-content");
+  const path = getActivePath();
+  try {
+    const resp = await fetch("/docs/" + path);
+    if (!resp.ok) throw new Error("Not found: " + path);
+    const md = await resp.text();
+    content.innerHTML = marked.parse(md);
+    content.scrollTop = 0;
+  } catch (e) {
+    content.innerHTML = "<p>Could not load " + path + "</p><p>" + e.message + "</p>";
+  }
+}
+
+function selectPrimary(index) {
+  activePrimary = index;
+  activeSub = 0;
+  renderPrimaryTabs();
+  renderSubTabs();
+  loadContent();
+}
+
+function selectSub(index) {
+  activeSub = index;
+  renderSubTabs();
+  loadContent();
+}
+
+renderPrimaryTabs();
+renderSubTabs();
+loadContent();
+</script>
+
+</body>
+</html>
