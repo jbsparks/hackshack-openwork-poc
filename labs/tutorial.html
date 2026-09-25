@@ -70,7 +70,7 @@ body { display: flex; height: 100vh; font-family: -apple-system, BlinkMacSystemF
 <body>
 
 <div class="left">
-  <iframe src="http://localhost:5178" allow="clipboard-read; clipboard-write"></iframe>
+  <iframe id="opencode-frame" allow="clipboard-read; clipboard-write"></iframe>
 </div>
 
 <div class="right">
@@ -80,6 +80,14 @@ body { display: flex; height: 100vh; font-family: -apple-system, BlinkMacSystemF
 </div>
 
 <script>
+// In WoD, the tutorial and OpenCode ports are mapped independently per student.
+// Keep the left panel on the same host and derive the OpenCode port from the
+// externally visible tutorial port (8080 -> 5178, offset 2902).
+const tutorialPort = Number(window.location.port || 8080);
+const opencodePort = tutorialPort - 2902;
+document.getElementById("opencode-frame").src =
+  `http://${window.location.hostname}:${opencodePort}`;
+
 // Tab structure: primary tabs with optional Web/CLI sub-tabs
 const tabs = [
   { label: "Welcome", subs: null, path: "README.md" },
