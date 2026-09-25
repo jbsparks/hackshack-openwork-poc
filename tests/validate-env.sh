@@ -95,31 +95,20 @@ else
     fail "Cannot reach Zen API at opencode.ai/zen/v1 -- check network/TLS"
 fi
 
-# --- HPE INSTROSPECT ---
+# --- NVIDIA SKILLSPECTOR ---
 
-section "HPE instrospect (Skill Auditing)"
+section "NVIDIA SkillSpector (Skill Auditing)"
 
-if [ -d "/opt/instrospect" ]; then
-    pass "instrospect installed at /opt/instrospect"
+if command -v skillspector >/dev/null 2>&1; then
+    pass "SkillSpector CLI installed"
 else
-    fail "instrospect not found at /opt/instrospect"
+    fail "SkillSpector CLI not found"
 fi
 
-if [ -f "/opt/instrospect/src/skill_review.py" ]; then
-    FIRST_LINE=$(head -1 /opt/instrospect/src/skill_review.py)
-    if [ "$FIRST_LINE" = "# instrospect not available" ]; then
-        warn "instrospect is a stub -- Lab 2D will be limited"
-    else
-        pass "skill_review.py static scanner present"
-    fi
+if command -v skillspector >/dev/null 2>&1 && skillspector scan /root/labs/.opencode/skills --no-llm --format json >/tmp/skillspector-validation.json 2>/tmp/skillspector-validation.err; then
+    pass "SkillSpector static scan completed"
 else
-    fail "skill_review.py missing"
-fi
-
-if [ -f "/opt/instrospect/src/sandbox/bootstrap.py" ]; then
-    pass "Adversarial sandbox (bootstrap.py) present"
-else
-    fail "Adversarial sandbox missing"
+    fail "SkillSpector static scan failed"
 fi
 
 # --- LAB MATERIALS ---

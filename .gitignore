@@ -19,6 +19,7 @@ install.priv
 .env
 *.key
 *.pem
+*.crt
 error*.png
 screenshot.png
 proxmox.png

@@ -506,8 +506,8 @@ async function recordLab4(page, frame) {
   await scrollDocPanel(page, 400);
 
   // Step 4: Static scan
-  console.log('  [step] Static scan with instrospect');
-  await sendPrompt(frame, 'Run this command: python3 /opt/instrospect/src/skill_review.py skill .opencode/skills/find-skills/ --json');
+  console.log('  [step] Static scan with SkillSpector');
+  await sendPrompt(frame, 'Run this command: skillspector scan skill .opencode/skills/find-skills/ --json');
   await waitForResponse(frame);
   await sleep(PAUSE_AFTER_RESP);
   await scrollDocPanel(page, 400);

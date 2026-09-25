@@ -102,11 +102,11 @@ SKILLEOF
   ls .opencode/skills/
   pause 2
 
-  # Part D: instrospect
+  # Part D: SkillSpector
   echo ""
-  echo "[*] Part D: Auditing with instrospect..."
+  echo "[*] Part D: Auditing with SkillSpector..."
   pause
-  python3 /opt/instrospect/src/skill_review.py skill .opencode/skills/greeter/ --json 2>&1 || echo "[WARN] instrospect not available (stub mode)"
+  skillspector scan skill .opencode/skills/greeter/ --json 2>&1 || echo "[WARN] SkillSpector not available (stub mode)"
   pause 3
 }
 
@@ -198,9 +198,9 @@ lab4() {
   pause 3
 
   echo ""
-  echo "[*] Auditing with instrospect..."
+  echo "[*] Auditing with SkillSpector..."
   pause
-  python3 /opt/instrospect/src/skill_review.py skill .opencode/skills/find-skills/ --json 2>&1 || echo "[WARN] instrospect not available (stub mode)"
+  skillspector scan skill .opencode/skills/find-skills/ --json 2>&1 || echo "[WARN] SkillSpector not available (stub mode)"
   pause 3
 
   echo ""
@@ -214,7 +214,7 @@ lab4() {
   pause
   for d in .opencode/skills/*/; do
     echo "=== $d ==="
-    python3 /opt/instrospect/src/skill_review.py skill "$d" --json 2>&1 | tail -5 || echo "[WARN] scan failed"
+    skillspector scan skill "$d" --json 2>&1 | tail -5 || echo "[WARN] scan failed"
     echo ""
   done
   pause 3

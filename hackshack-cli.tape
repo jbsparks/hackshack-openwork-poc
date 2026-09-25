@@ -1,6 +1,6 @@
 # hackshack-cli.tape — VHS deterministic recording of shell-only portions
 #
-# This captures the shell commands (mkdir, cat, ls, instrospect) as a clean
+# This captures the shell commands (mkdir, cat, ls, SkillSpector) as a clean
 # GIF/MP4. TUI sessions (opencode) are NOT included here — those are
 # captured by the asciinema+expect flow in record-cli.sh.
 #
@@ -81,7 +81,7 @@ Type "# TUI session: test greeter, run /skill-creator (see asciinema)"
 Enter
 Sleep 1s
 
-Type "python3 /opt/instrospect/src/skill_review.py skill .opencode/skills/greeter/ --json"
+Type "skillspector scan skill .opencode/skills/greeter/ --json"
 Enter
 Sleep 5s
 
@@ -125,13 +125,13 @@ Type "cat .opencode/skills/find-skills/SKILL.md | head -30"
 Enter
 Sleep 2s
 
-Type "python3 /opt/instrospect/src/skill_review.py skill .opencode/skills/find-skills/ --json"
+Type "skillspector scan skill .opencode/skills/find-skills/ --json"
 Enter
 Sleep 5s
 
 Type "# Compare all skills"
 Enter
-Type "for d in .opencode/skills/*/; do echo \"=== $d ===\"; python3 /opt/instrospect/src/skill_review.py skill \"$d\" --json 2>&1 | tail -5; done"
+Type "for d in .opencode/skills/*/; do echo \"=== $d ===\"; skillspector scan skill \"$d\" --json 2>&1 | tail -5; done"
 Enter
 Sleep 10s
 

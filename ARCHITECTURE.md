@@ -64,7 +64,7 @@ graph TB
         L3["Zscaler CA cert<br/>config/zscaler-root-ca.crt"]
         L4["Node.js 22 LTS<br/>via NodeSource"]
         L5["opencode-ai (npm -g)"]
-        L6["HPE instrospect<br/>/opt/instrospect/ or stub"]
+        L6["NVIDIA SkillSpector<br/>/opt/SkillSpector/ or stub"]
         L7["OpenCode config<br/>/root/.config/opencode/config.json"]
         L8["Lab materials<br/>/root/labs/ (git init)"]
         L9["Validation tests<br/>/root/tests/validate-env.sh"]
@@ -83,17 +83,17 @@ graph TB
 | System packages | Build tools, editors, utilities | ~200 MB |
 | Node.js 22 | JavaScript runtime for OpenCode | ~100 MB |
 | opencode-ai (npm) | AI coding assistant CLI + web UI | ~800 MB |
-| instrospect | HPE Skill auditing tool (or stub) | ~5 MB |
+| SkillSpector | HPE Skill auditing tool (or stub) | ~5 MB |
 | Lab materials | Markdown docs, sample code, configs | ~1 MB |
 
 ### 2.2 Build Variants
 
 ```mermaid
 graph LR
-    A{{"HPE VPN<br/>available?"}}
-    A -->|Yes| B["./build.sh<br/>Clones instrospect from<br/>github.hpe.com via SSH/HTTPS"]
-    A -->|No| C["make build-quick<br/>Creates instrospect stub"]
-    B --> D["Full image<br/>Lab 2D: instrospect audit"]
+    A{{"internet access<br/>available?"}}
+    A -->|Yes| B["./build.sh<br/>Clones SkillSpector from<br/>github.com via SSH/HTTPS"]
+    A -->|No| C["make build-quick<br/>Creates SkillSpector stub"]
+    B --> D["Full image<br/>Lab 2D: SkillSpector audit"]
     C --> E["Stub image<br/>Lab 2D: limited<br/>(prints warning + exit 1)"]
 
     style D fill:#01A982,color:#fff
@@ -102,14 +102,14 @@ graph LR
 
 The `build.sh` script tries three clone methods in order: HTTPS with `GHE_TOKEN`, SSH key, then HTTPS with git credential manager. If all fail, the build aborts with instructions. The `make build-quick` target creates a Python stub that prints a warning and exits non-zero, allowing all other labs to work without VPN access.
 
-### 2.3 Instrospect Stub Detection
+### 2.3 SkillSpector Stub Detection
 
-The Dockerfile uses a grep-based check (not exact first-line match) to distinguish real instrospect from the stub:
+The Dockerfile uses a grep-based check (not exact first-line match) to distinguish real SkillSpector from the stub:
 
 ```
-if [ -f /opt/instrospect/src/skill_review.py ] && \
-   ! grep -q "instrospect not available" /opt/instrospect/src/skill_review.py; then
-    # Real instrospect -- symlink to /usr/local/bin
+if [ -f skillspector scan ] && \
+   ! grep -q "SkillSpector not available" skillspector scan; then
+    # Real SkillSpector -- symlink to /usr/local/bin
 else
     # Stub -- print note during build
 fi
@@ -477,14 +477,14 @@ graph LR
     L4["Lab 4<br/>Ingesting Skills<br/>(20 min)"]
 
     L1 -->|"Knows: prompts, tools,<br/>file operations"| L2
-    L2 -->|"Knows: SKILL.md format,<br/>skill-creator, instrospect"| L3
+    L2 -->|"Knows: SKILL.md format,<br/>skill-creator, SkillSpector"| L3
     L3 -->|"Knows: multi-step workflows,<br/>code review automation"| L4
 
     subgraph "Lab 2 Parts"
         A["A: Hand-craft a skill<br/>(greeter)"]
         B["B: /skill-creator<br/>(auto-generate)"]
         C["C: Skill from docs<br/>(QE/HPC references)"]
-        D["D: instrospect audit<br/>(requires VPN build)"]
+        D["D: SkillSpector audit<br/>(requires VPN build)"]
     end
 
     L2 --- A --> B --> C --> D
@@ -596,7 +596,7 @@ With 20+ concurrent students, each needing a 2 GB / 2 CPU container:
 | No volume mounts | Container filesystem is isolated; no host data exposure |
 | No privileged mode | Containers run as root inside container only |
 | Zscaler CA | Baked into image for corporate TLS inspection; harmless in non-corporate environments |
-| instrospect policy | Runs from /opt/instrospect (outside project dir); OpenCode shows policy warning students must accept |
+| SkillSpector policy | Runs from /opt/SkillSpector (outside project dir); OpenCode shows policy warning students must accept |
 | Lab content | Public-only references (no proprietary HPE content); warning against pasting proprietary data into public models |
 
 ---
@@ -611,7 +611,7 @@ HackShack/
   Dockerfile               # Container image definition
   docker-compose.yml       # Local development compose file
   entrypoint.sh            # Container startup script
-  build.sh                 # Full build script (clones instrospect)
+  build.sh                 # Full build script (clones SkillSpector)
   Makefile                 # Build, run, video, clean targets
   record-demo.js           # Playwright demo recording script
   config/
@@ -638,7 +638,7 @@ HackShack/
     0-ReadMeFirst.ipynb    # JupyterHub launcher notebook
     wod.conf               # WoD workshop metadata
   recordings/              # Demo video output (gitignored)
-  instrospect/             # Cloned at build time (gitignored)
+  SkillSpector/             # Cloned at build time (gitignored)
 ```
 
 ---
@@ -654,5 +654,5 @@ To deploy this workshop on the WoD infrastructure:
 - [ ] **Network**: Ensure outbound HTTPS to `opencode.ai` is allowed from the backend server. No inbound ports beyond the per-student mapping are needed.
 - [ ] **Capacity**: Plan for 2 GB RAM + 2 CPUs per concurrent student. A 64 GB / 32 CPU server supports ~16 concurrent students comfortably.
 - [ ] **GITHUB_TOKEN** (optional): If Copilot access is desired for faster responses, set `GITHUB_TOKEN` in the environment or pass it through create-appliance.sh.
-- [ ] **instrospect** (optional): If Lab 2D full functionality is needed, ensure `github.hpe.com` is reachable during the Docker build.
+- [ ] **SkillSpector** (optional): If Lab 2D full functionality is needed, ensure `github.com` is reachable during the Docker build.
 - [ ] **Firewall**: Only outbound HTTPS (443) to `opencode.ai` is required. No inbound internet access needed.

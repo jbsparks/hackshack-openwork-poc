@@ -1,8 +1,8 @@
 # TLDR -- Local Bootstrap
 
-Prerequisites: Docker running, Git installed. HPE VPN for instrospect only.
+Prerequisites: Docker running, Git installed. internet access for SkillSpector only.
 
-## Full build (with instrospect)
+## Full build (with SkillSpector)
 
 ```bash
 git clone <this-repo> && cd HackShack
@@ -10,13 +10,13 @@ git clone <this-repo> && cd HackShack
 docker compose up -d
 ```
 
-## Quick build (skip instrospect, Lab 2D will be limited)
+## Quick build (skip SkillSpector, Lab 2D will be limited)
 
 ```bash
 git clone <this-repo> && cd HackShack
-mkdir -p instrospect/src/sandbox
-echo 'import sys; print("[WARN] instrospect not available -- built without HPE VPN. See Lab 2 Part D for details."); sys.exit(1)' > instrospect/src/skill_review.py
-echo 'import sys; print("[WARN] instrospect not available -- built without HPE VPN. See Lab 2 Part D for details."); sys.exit(1)' > instrospect/src/sandbox/bootstrap.py
+mkdir -p SkillSpector/src/sandbox
+echo 'import sys; print("[WARN] SkillSpector not available -- built without internet access. See Lab 2 Part D for details."); sys.exit(1)' > SkillSpector/src/skill_review.py
+echo 'import sys; print("[WARN] SkillSpector not available -- built without internet access. See Lab 2 Part D for details."); sys.exit(1)' > SkillSpector/src/sandbox/bootstrap.py
 docker compose up -d
 ```
 
@@ -79,6 +79,7 @@ The tutorial page (port 8080) has tiered tabs:
 | Lab 2 | Web / CLI | `lab-02-skills/web.md`, `cli.md` |
 | Lab 3 | Web / CLI | `lab-03-agent-workflow/web.md`, `cli.md` |
 | Lab 4 | Web / CLI | `lab-04-ingesting-skills/web.md`, `cli.md` |
+| Lab 5 | Web / CLI | `lab-05-using-community-skills/web.md`, `cli.md` |
 
 Web is the default sub-tab. The original `README.md` files in each lab dir
 are kept for reference but no longer served by the tutorial tabs.
@@ -105,4 +106,4 @@ Total first run: ~5 min. Subsequent starts: ~30 sec.
 | Image size | 1.6 GB |
 | RAM requirement | 2 GB |
 | Ports | 8080 (tutorial), 5178 (OpenCode) |
-| Validation checks | 26 pass, 0 fail, 1 warn (instrospect stub) |
+| Validation checks | 26 pass, 0 fail, 1 warn (SkillSpector stub) |

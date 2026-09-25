@@ -15,9 +15,10 @@ Students are learning OpenCode (an AI coding assistant) and how to build AI skil
 The workspace contains four labs in order of difficulty:
 
 1. labs/lab-01-getting-started/ (20 min) - First prompts, exploring the AI environment
-2. labs/lab-02-skills/ (45 min) - Building skills: hand-craft, /skill-creator, from documents, instrospect audit
+2. labs/lab-02-skills/ (45 min) - Building skills: hand-craft, /skill-creator, from documents, SkillSpector audit
 3. labs/lab-03-agent-workflow/ (40 min) - Multi-step automated code review with a custom skill
-4. labs/lab-04-ingesting-skills/ (20 min) - Ingesting community skills from the Skills Registry + instrospect audit
+4. labs/lab-04-ingesting-skills/ (20 min) - Ingesting community skills from the Skills Registry + SkillSpector audit
+5. labs/lab-05-using-community-skills/ (20 min) - Discovering and using a community skill
 
 Each lab has a README.md with full step-by-step instructions.
 
@@ -28,7 +29,7 @@ Each lab has a README.md with full step-by-step instructions.
 - Run /models in OpenCode to see all available free models
 - All lab files are in the workspace under labs/
 - Skills go in .opencode/skills/
-- The instrospect tool at /opt/instrospect audits skill quality
+- The SkillSpector tool at /opt/SkillSpector audits skill quality
 
 ## First Interaction
 

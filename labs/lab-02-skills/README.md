@@ -1,13 +1,13 @@
 # Lab 02: Building Skills -- From Scratch, From Documents, and Auditing Them
 
 ## Objective
-Learn multiple ways to create OpenCode skills, then audit them for quality and safety using the instrospect tool.
+Learn multiple ways to create OpenCode skills, then audit them for quality and safety using the SkillSpector tool.
 
 This lab has 4 parts:
 - **Part A:** Hand-craft a skill from scratch (understand the anatomy)
 - **Part B:** Use the `/skill-creator` to generate skills from a description
 - **Part C:** Create a skill from an existing document (turn docs into expertise)
-- **Part D:** Audit your skills with instrospect (provenance, safety, adversarial testing)
+- **Part D:** Audit your skills with SkillSpector (provenance, safety, adversarial testing)
 
 ---
 
@@ -182,104 +182,35 @@ Any structured knowledge -- troubleshooting guides, coding standards, review che
 
 ---
 
-## Part D: Audit Skills with instrospect
+## Part D: Scan Skills with NVIDIA SkillSpector
 
-Now that you have created skills, how do you know they are safe? The `instrospect` tool audits skills for provenance, quality, and adversarial resistance.
+NVIDIA SkillSpector is an open-source static security scanner for agent skills. This lab uses `--no-llm`, so no provider key is required and skill content is not sent to an external model. SkillSpector analyzes files; it does not execute the scanned skill as a behavioral sandbox.
 
-### What instrospect Does
+Run a scan:
 
-instrospect is an orchestration pipeline that combines:
-1. **Header validation** -- checks YAML provenance fields (12 required)
-2. **Body analysis** -- scans for hardcoded secrets, dangerous commands (30+ rules)
-3. **External scanners** -- pluggable slot for Nvidia SkillSpector, Snyk, etc.
-4. **Provenance verification** -- validates source-repo, derived-from, dates
-5. **Adversarial sandbox** -- generates attack inputs and tests behavioral resistance
-
-### 1. Run a Static Scan
-
-Start with the built-in scanner (no LLM needed):
-
-```bash
-python3 /opt/instrospect/src/skill_review.py skill .opencode/skills/greeter/ --json
+```
+skillspector scan .opencode/skills/greeter/ --no-llm --format json
 ```
 
-This runs 30+ rules and outputs findings with severities and remediation.
+Save a machine-readable report:
 
-### 2. Add a Provenance Header
-
-instrospect checks for a proper provenance header. Update your greeter skill:
-
-```markdown
----
-name: greeter
-description: "Generates personalized welcome messages for workshop participants"
-author: "Your Name"
-organization: "HackShack"
-license: "MIT"
-classification: public
-created: '2026-08-27'
-modified: '2026-08-27'
-version: 0.1.0
-derived-from: []
-generation-method: ai-assisted
-generation-tool: opencode
-review-status: unreviewed
-checksum: ""
----
+```
+skillspector scan .opencode/skills/greeter/ --no-llm --format json --output greeter-scan.json
 ```
 
-Re-run the scan and see the header validation improve.
+You can produce SARIF for security tooling:
 
-### 3. Run an Adversarial Sandbox Test
-
-This is what makes instrospect unique -- it *runs* the skill against adversarial inputs and watches what happens:
-
-```bash
-# Simulated mode (no LLM cost, tests the policy engine)
-python3 /opt/instrospect/src/sandbox/bootstrap.py --simulated --skill .opencode/skills/greeter/
-
-# Live mode with a Zen free model (tests real LLM behavior)
-python3 /opt/instrospect/src/sandbox/bootstrap.py --skill .opencode/skills/greeter/ \
-    --model zen/nemotron-3-ultra-free
+```
+skillspector scan .opencode/skills/greeter/ --no-llm --format sarif --output greeter-scan.sarif
 ```
 
-### 4. Read the Audit Report
+Audit the generated skill:
 
-instrospect produces several artifacts:
-
-| File | What it shows |
-|------|---------------|
-| `sandbox-report.md` | Full audit with per-test details |
-| `tool-calls.jsonl` | Raw trace of every tool call |
-| `trace-view.html` | Interactive visualization |
-
-```bash
-cat sandbox-output/sandbox-report.md
+```
+skillspector scan .opencode/skills/security-reviewer/ --no-llm --format json
 ```
 
-### 5. Audit the Skill Creator's Output
-
-Now audit the skill that the `/skill-creator` generated in Part B:
-
-```bash
-python3 /opt/instrospect/src/skill_review.py skill .opencode/skills/security-reviewer/ --json
-```
-
-Compare the scores. How does an AI-generated skill compare to your hand-crafted one?
-
-### 6. Understanding the Score
-
-| Score | Recommendation | Meaning |
-|-------|---------------|---------|
-| 80-100 | `approved` | Ready for production use |
-| 50-79 | `peer-reviewed` | Needs human judgment on flagged items |
-| 0-49 | `unreviewed` | Do not trust without fixes |
-
-### Challenge: Fix the Findings
-
-Pick a finding from instrospect's report and fix it. Re-run the scan. Did the score improve?
-
----
+Pick a finding, ask OpenCode to fix it, and rerun the scan.
 
 ## Key Concepts
 
@@ -289,7 +220,7 @@ Pick a finding from instrospect's report and fix it. Re-run the scan. Did the sc
 | **`/skill-creator`** | Generates skills from descriptions or documents |
 | **Document -> Skill** | Any structured knowledge can become actionable |
 | **Provenance headers** | Track who made it, when, and how |
-| **instrospect** | Static analysis + adversarial behavioral testing |
+| **SkillSpector** | Static analysis + adversarial behavioral testing |
 | **Audit before deploy** | Especially for skills from external sources |
 
 ## Next Lab

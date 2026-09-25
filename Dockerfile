@@ -1,7 +1,7 @@
 # HPE HackShack - OpenCode Tutorial Environment
 # OpenCode CLI: https://opencode.ai
 # Uses free OpenCode Zen cloud models (no API keys, no local GPU needed)
-FROM ubuntu:22.04
+FROM python:3.12-slim-bookworm
 
 ENV DEBIAN_FRONTEND=noninteractive
 # Bun/OpenCode needs explicit cert path for TLS on Ubuntu
@@ -16,8 +16,6 @@ RUN apt-get update && apt-get install -y \
     jq \
     unzip \
     ca-certificates \
-    python3 \
-    python3-pip \
     vim \
     nano \
     build-essential \
@@ -27,12 +25,6 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/* \
     && printf '#!/bin/sh\nexit 0\n' > /usr/bin/xdg-open && chmod +x /usr/bin/xdg-open
 
-# --- Corporate proxy/TLS inspection certs (e.g. Zscaler on HPE VPN) ---
-# If config/zscaler-root-ca.crt exists, add it to the trust store.
-# Safe to skip for non-corporate environments.
-COPY config/zscaler-root-ca.crt /usr/local/share/ca-certificates/zscaler-root-ca.crt
-RUN update-ca-certificates
-
 # --- Node.js 22 (LTS) via NodeSource ---
 RUN curl -fsSL https://deb.nodesource.com/setup_22.x | bash - && \
     apt-get install -y nodejs && \
@@ -41,17 +33,9 @@ RUN curl -fsSL https://deb.nodesource.com/setup_22.x | bash - && \
 # --- Install OpenCode CLI ---
 RUN npm install -g opencode-ai@latest
 
-# --- Install HPE instrospect (skill auditing) ---
-# Source: https://github.hpe.com/jonathan-sparks/instrospect
-# If instrospect/ is not in build context, create a stub (Lab 2D will be limited)
-COPY instrospect/ /opt/instrospect/
-RUN if [ -f /opt/instrospect/src/skill_review.py ] && ! grep -q "instrospect not available" /opt/instrospect/src/skill_review.py; then \
-        ln -sf /opt/instrospect/src/skill_review.py /usr/local/bin/skill-review && \
-        chmod +x /opt/instrospect/src/skill_review.py && \
-        chmod +x /opt/instrospect/src/sandbox/bootstrap.py; \
-    else \
-        echo "[NOTE] instrospect stub installed -- Lab 2D will be limited"; \
-    fi
+# --- Install NVIDIA SkillSpector (static skill security scanning) ---
+ARG SKILLSPECTOR_REF=main
+RUN pip install --no-cache-dir "git+https://github.com/NVIDIA/SkillSpector.git@${SKILLSPECTOR_REF}"
 
 # --- Configure OpenCode ---
 RUN mkdir -p /root/labs/.opencode/skills && \

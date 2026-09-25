@@ -297,10 +297,10 @@ docker-run-per-student with port arithmetic.
 
 ## 6. Repo documentation corrections (independent)
 
-1. **Never run `build.sh` off the HPE VPN.** Line 54 `rm -rf "$INSTROSPECT_DIR"` runs
-   *before* the clone → deletes vendored `instrospect/`, then fails.
-   Recover: `git checkout -- instrospect/`. **Use `docker build .`**
-2. **instrospect is vendored, not gitignored** — 51 tracked files; `skill_review.py` 970
+1. **Never run `build.sh` off the internet access.** Line 54 `rm -rf "$SKILLSPECTOR_DIR"` runs
+   *before* the clone → deletes vendored `SkillSpector/`, then fails.
+   Recover: `git checkout -- SkillSpector/`. **Use `docker build .`**
+2. **SkillSpector is vendored, not gitignored** — 51 tracked files; `skill_review.py` 970
    lines, `bootstrap.py` 2620 lines, no stub markers. **Lab 2D works without VPN.**
    `ARCHITECTURE.md` §2.2/§12 and `TLDR.md` are stale.
 3. `make build-quick` is obsolete.

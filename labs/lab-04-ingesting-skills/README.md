@@ -1,7 +1,7 @@
 # Lab 04: Ingesting Community Skills
 
 ## Objective
-Install a community skill from the open Skills Registry, verify it with instrospect, and use it to discover more skills.
+Install a community skill from the open Skills Registry, verify it with SkillSpector, and use it to discover more skills.
 
 **Time estimate:** 20 minutes
 
@@ -13,7 +13,7 @@ So far you have hand-crafted skills and generated them with `/skill-creator`. Bu
 
 The skill we will install -- **find-skills** from `vercel-labs/skills` -- is the most popular skill on the registry (3M+ installs, 30K+ GitHub stars). It helps your AI agent discover and install *other* skills from the ecosystem.
 
-> **Trust but verify**: Community skills are powerful, but they inject instructions into your AI. Always audit external skills with instrospect before using them in production.
+> **Trust but verify**: Community skills are powerful, but they inject instructions into your AI. Always audit external skills with SkillSpector before using them in production.
 
 ## Steps
 
@@ -25,7 +25,7 @@ See the **Lab 4** tab in the tutorial page for full step-by-step instructions (W
 2. Install the `find-skills` skill with `npx skills add`
 3. Copy it to `.opencode/skills/` so OpenCode can discover it
 4. Verify the installation
-5. Audit with instrospect (static scan)
+5. Audit with SkillSpector (static scan)
 6. Compare audit scores across all your skills
 7. Use the skill to discover more community skills
 
@@ -34,7 +34,7 @@ See the **Lab 4** tab in the tutorial page for full step-by-step instructions (W
 - **Skills Registry** is an open ecosystem of community-built AI skills
 - `npx skills add` installs skills; `--agent opencode` targets OpenCode
 - Installed skills land in `.agents/skills/` and must be copied to `.opencode/skills/`
-- **instrospect** audits skill quality and safety before production use
+- **SkillSpector** audits skill quality and safety before production use
 - Always verify external skills -- they inject instructions into your AI agent
 
 ## Congratulations!

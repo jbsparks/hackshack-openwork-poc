@@ -1,7 +1,7 @@
 # Lab 04: Ingesting Community Skills (CLI)
 
 ## Objective
-Install a community skill from the open Skills Registry, verify it with instrospect, and use it to discover more skills -- all from the command line.
+Install a community skill from the open Skills Registry, verify it with SkillSpector, and use it to discover more skills -- all from the command line.
 
 **Time estimate:** 20 minutes
 
@@ -13,7 +13,7 @@ So far you have hand-crafted skills and generated them with `/skill-creator`. Bu
 
 The skill we will install -- **find-skills** from `vercel-labs/skills` -- is the most popular skill on the registry (3M+ installs, 30K+ GitHub stars). It helps your AI agent discover and install *other* skills from the ecosystem.
 
-> **Trust but verify**: Community skills are powerful, but they inject instructions into your AI. Always audit external skills with instrospect before using them in production.
+> **Trust but verify**: Community skills are powerful, but they inject instructions into your AI. Always audit external skills with SkillSpector before using them in production.
 
 ---
 
@@ -75,111 +75,23 @@ cat .opencode/skills/find-skills/SKILL.md
 
 You should see the skill's YAML frontmatter (name, description) and its instruction body. Read through it -- this is what gets injected into the AI when the skill activates.
 
-### 4. Audit with instrospect -- Static Scan
+### 4. Audit with SkillSpector -- static scan
 
-Before trusting this community skill, run a static analysis:
-
-```bash
-python3 /opt/instrospect/src/skill_review.py skill .opencode/skills/find-skills/ --json
-```
-
-> **Policy warning**: If running this inside OpenCode (rather than a plain terminal), accept the authorization warning for `/opt/instrospect/`.
->
-> **Stub notice**: If instrospect shows a warning about not being available, the environment was built without HPE VPN access. In that case, read through the steps to understand the audit workflow -- the concepts still apply.
-
-Review the findings:
-- Does it have a proper provenance header?
-- Are there any hardcoded secrets or dangerous commands?
-- What is the overall quality score?
-
-### 5. Audit with instrospect -- Adversarial Sandbox
-
-Run the behavioral test to see how the skill holds up against adversarial inputs:
-
-```bash
-# Simulated mode (no LLM cost, tests the policy engine)
-python3 /opt/instrospect/src/sandbox/bootstrap.py --simulated --skill .opencode/skills/find-skills/
-
-# Live mode with a Zen free model (tests real LLM behavior)
-python3 /opt/instrospect/src/sandbox/bootstrap.py --skill .opencode/skills/find-skills/ \
-    --model opencode/nemotron-3-ultra-free
-```
-
-### 6. Read the Audit Report
-
-```bash
-cat .opencode/skills/find-skills/sandbox-output/sandbox-report.md
-```
-
-Compare the audit scores to the skills you created in Lab 2:
-
-| Skill | Source | Expected Score Range |
-|-------|--------|---------------------|
-| greeter (Lab 2A) | Hand-crafted | 40-60 (no provenance header) |
-| security-reviewer (Lab 2B) | /skill-creator | 50-70 |
-| find-skills (Lab 4) | Community (vercel-labs) | Varies -- check it! |
-
-### 7. Use the Skill
-
-Launch OpenCode and load all skills:
-
-```bash
-opencode
-```
+Before trusting this community skill, run:
 
 ```
-Load all local skills
+skillspector scan .opencode/skills/find-skills/ --no-llm --format json
 ```
 
-> **Known behavior**: OpenCode may show a warning like `Skill "find-skills" not found` in its skill registry. This is expected -- skills created or copied mid-session are not automatically registered. However, the "Load all local skills" prompt causes the model to read the SKILL.md files directly, and the skill **will work** despite the warning. A fix is pending upstream.
+Review the risk score, recommendation, provenance, dangerous commands, and dependency findings.
 
-Now use find-skills to discover other skills:
-
-```
-Find me a skill for writing unit tests
-```
-
-Or:
+Save a report:
 
 ```
-Is there a skill for database migrations?
+skillspector scan .opencode/skills/find-skills/ --no-llm --format markdown --output find-skills-report.md
 ```
 
-The find-skills skill will search the Skills Registry and recommend options with install counts and quality indicators.
-
-### 8. Install Another Skill (Optional)
-
-If find-skills recommends something interesting, exit OpenCode and install it:
-
-```bash
-npx skills add <package-url> --skill <skill-name> --agent opencode -y
-cp -r .agents/skills/<skill-name> .opencode/skills/<skill-name>
-```
-
-Then audit it with instrospect before using it:
-
-```bash
-python3 /opt/instrospect/src/skill_review.py skill .opencode/skills/<skill-name>/ --json
-```
-
-### 9. Non-Interactive Audit Pipeline
-
-You can script the entire install-copy-audit-use workflow:
-
-```bash
-# Install + copy to OpenCode
-npx skills add https://github.com/vercel-labs/skills --skill find-skills --agent opencode -y
-cp -r .agents/skills/find-skills .opencode/skills/find-skills
-
-# Audit
-python3 /opt/instrospect/src/skill_review.py skill .opencode/skills/find-skills/ --json
-
-# Use (non-interactively)
-opencode run "Load all local skills. Then find me a skill for writing unit tests." \
-    --model opencode/mimo-v2.5-free
-```
-
-This pattern -- install, audit, use -- is the recommended workflow for CI/CD integration.
+SkillSpector is a static scanner, not a behavioral sandbox.
 
 ---
 
@@ -189,7 +101,7 @@ This pattern -- install, audit, use -- is the recommended workflow for CI/CD int
 |---------|----------|
 | **Skills Registry** | Open ecosystem of community-contributed agent skills ([www.skills.sh](https://www.skills.sh)) |
 | **`npx skills add`** | Install skills from GitHub repositories |
-| **Audit before use** | Always run instrospect on external skills |
+| **Audit before use** | Always run SkillSpector on external skills |
 | **Static + behavioral** | Static scan catches structure issues; sandbox catches behavioral issues |
 | **Trust signals** | Install count, GitHub stars, security audits on the registry |
 | **find-skills meta-skill** | A skill that helps discover other skills |
@@ -197,12 +109,12 @@ This pattern -- install, audit, use -- is the recommended workflow for CI/CD int
 
 ## Challenge: Compare Audit Scores
 
-Run instrospect on ALL skills in your `.opencode/skills/` directory and compare:
+Run SkillSpector on ALL skills in your `.opencode/skills/` directory and compare:
 
 ```bash
 for d in .opencode/skills/*/; do
     echo "=== $d ==="
-    python3 /opt/instrospect/src/skill_review.py skill "$d" --json 2>&1 | tail -5
+    skillspector scan "$d" --no-llm --format json
 done
 ```
 
@@ -223,6 +135,6 @@ You have completed all four labs in the HackShack OpenCode workshop. You now kno
 
 - Explore more skills at [www.skills.sh](https://www.skills.sh)
 - Build skills from your own team's runbooks and documentation
-- Set up instrospect in your CI/CD pipeline to audit skills automatically
+- Set up SkillSpector in your CI/CD pipeline to audit skills automatically
 - Share your best skills back to the community
 - Use `opencode run` to integrate agent workflows into your automation

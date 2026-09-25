@@ -9,7 +9,7 @@ You are looking at a split view:
 - **Left panel** -- OpenCode web UI (your AI workspace)
 - **Right panel** -- Lab instructions (you are reading them now)
 
-Use the tabs above (Welcome, Lab 1, Lab 2, Lab 3, Lab 4) to navigate between labs.
+Use the tabs above (Welcome, Lab 1, Lab 2, Lab 3, Lab 4, Lab 5) to navigate between labs.
 
 ---
 
@@ -55,7 +55,7 @@ Watch how OpenCode reads files, writes code, and runs commands -- asking for you
 
 ## Step 3: Work Through the Labs
 
-Scroll to the **top of this panel** -- you will see tabs labeled **Welcome**, **Lab 1**, **Lab 2**, **Lab 3**, and **Lab 4**. Click **Lab 1** to begin.
+Scroll to the **top of this panel** -- you will see tabs labeled **Welcome**, **Lab 1**, **Lab 2**, **Lab 3**, **Lab 4**, and **Lab 5**. Click **Lab 1** to begin.
 
 Each lab builds on the previous one -- do them in order.
 
@@ -64,7 +64,8 @@ Each lab builds on the previous one -- do them in order.
 | Lab 1 | First prompts, exploring the environment | 20 min |
 | Lab 2 | Building skills (hand-craft, creator, docs, audit) | 45 min |
 | Lab 3 | Multi-step automated code review | 40 min |
-| Lab 4 | Ingesting community skills + instrospect audit | 20 min |
+| Lab 4 | Ingesting community skills + SkillSpector audit | 20 min |
+| Lab 5 | Discovering and using a community skill | 20 min |
 
 ---
 
