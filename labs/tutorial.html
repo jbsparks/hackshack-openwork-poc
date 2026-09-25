@@ -10,11 +10,22 @@
 body { display: flex; height: 100vh; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
 
 /* Left: OpenCode */
-.left { flex: 1; border-right: 2px solid #e0e0e0; }
+.left {
+  flex: 1 1 0;
+  min-width: 0;
+  border-right: 2px solid #e0e0e0;
+}
 .left iframe { width: 100%; height: 100%; border: none; }
 
 /* Right: Tutorial docs */
-.right { flex: 1; display: flex; flex-direction: column; background: #fafafa; }
+.right {
+  flex: 1 1 0;
+  min-width: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  background: #fafafa;
+}
 
 /* Primary tab bar (Welcome, Lab 1, Lab 2, Lab 3) */
 .tabs-primary { display: flex; background: #f0f0f0; border-bottom: 1px solid #ddd; padding: 0; flex-shrink: 0; }
@@ -38,7 +49,8 @@ body { display: flex; height: 100vh; font-family: -apple-system, BlinkMacSystemF
 
 /* Doc content */
 .doc-content {
-  flex: 1; overflow-y: auto; padding: 24px 32px; line-height: 1.7;
+  flex: 1; min-width: 0; overflow-y: auto; overflow-x: auto;
+  padding: 24px 32px; line-height: 1.7;
 }
 .doc-content h1 { font-size: 24px; margin: 0 0 16px 0; padding-bottom: 8px; border-bottom: 2px solid #e0e0e0; }
 .doc-content h2 { font-size: 20px; margin: 24px 0 12px 0; color: #01A982; }
