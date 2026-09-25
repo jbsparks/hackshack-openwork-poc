@@ -55,7 +55,8 @@ COPY tests/ /root/tests/
 RUN chmod +x /root/tests/*.sh
 
 # Initialize labs as a git repo so OpenCode recognizes it as a project
-RUN cd /root/labs && \
+RUN git config --global init.defaultBranch main && \
+    cd /root/labs && \
     git config --global user.email "student@hackshack.local" && \
     git config --global user.name "HackShack Student" && \
     git init && git add -A && git commit -m "Initial lab content" --quiet
