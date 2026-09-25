@@ -44,13 +44,13 @@ Only continue if the scope is appropriate for this workshop.
 Replace the placeholders with the URL and skill name you selected:
 
 ```bash
-npx skills add <REPOSITORY_URL> --skill <SKILL_NAME> --agent opencode -y
+npx skills add crazymsn/academic-skills@astropy --skill astropy --agent opencode -y
 ```
 
 Bridge the Skills CLI directory to OpenCode:
 
 ```bash
-cp -r .agents/skills/<SKILL_NAME> .opencode/skills/<SKILL_NAME>
+cp -r .agents/skills/astropy .opencode/skills/astropy
 ```
 
 ### 4. Check the skill before you run it
@@ -60,13 +60,13 @@ A skill injects instructions into your agent -- read it and scan it **before** i
 Read what you installed:
 
 ```bash
-cat .opencode/skills/<SKILL_NAME>/SKILL.md
+tell me about the astropy skill you have just installed.
 ```
 
 Then run a static scan:
 
 ```
-skillspector scan .opencode/skills/<SKILL_NAME>/ --no-llm --format json
+skillspector scan .opencode/skills/astropy/ --no-llm --format json
 ```
 
 Review the score, recommendation, and findings. Do not use a skill with a
